@@ -7,8 +7,6 @@ from PyQt5.QtCore import (QFile, QPoint, QRect, QSize,
 from PyQt5.QtGui import QIcon, QFont, QClipboard, QPixmap, QImage
 import sys
 import pafy, requests
-from io import StringIO
-from PIL import Image
 #icon taskbar
 try:
     from PyQt5.QtWinExtras import QtWin
@@ -32,6 +30,9 @@ class UI(QMainWindow):
         self.DlLoc.clicked.connect(self.cmdDlLoc)
 
         self.DLink.returnPressed.connect(self.cmdQuality)
+
+        self.StartDl.clicked.connect(self.cmdDownload)
+        self.ProgressBar.setMaximum(1.0)
 
         
 
@@ -62,10 +63,10 @@ class UI(QMainWindow):
             error_dialog = QErrorMessage()
             error_dialog.showMessage('Error!')
 
-        
+    def DLprogress(total, recvd, ratio, rate, eta):
+        self.ProgressBar.setValue(ratio)
 
-    def cmdDLink(self):
-        print("Hello")
+
 
     def cmdDlLoc(self):
         dlg = QFileDialog()
@@ -73,7 +74,14 @@ class UI(QMainWindow):
         fileName = dlg.getExistingDirectory()
         if fileName:
             self.SaveLoc.setText(fileName)
-            self.OutFolder = fileName
+
+    def cmdDownload(self):
+        path = self.SaveLoc.text()
+        url = self.DLink.text()
+        video = pafy.new(url)
+        bs = video.getbest()
+        bs.download(filepath=path, quiet=False, callback=self.DLprogress, meta=False, remux_audio=False)
+
 
 
 
