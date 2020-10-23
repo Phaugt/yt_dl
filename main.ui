@@ -101,6 +101,11 @@
       <pointsize>10</pointsize>
      </font>
     </property>
+    <property name="styleSheet">
+     <string notr="true">border-color: rgb(190, 190, 190);
+background-color: rgb(217, 217, 217);
+alternate-background-color: rgb(217, 217, 217);</string>
+    </property>
     <property name="readOnly">
      <bool>true</bool>
     </property>
@@ -160,7 +165,7 @@
      <string>Clear</string>
     </property>
    </widget>
-   <widget class="QGraphicsView" name="Thumb">
+   <widget class="QLabel" name="thumb">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -168,6 +173,15 @@
       <width>480</width>
       <height>270</height>
      </rect>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>480</width>
+      <height>270</height>
+     </size>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>

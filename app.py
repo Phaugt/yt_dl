@@ -1,13 +1,14 @@
 #gui dep
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QLineEdit, QProgressBar,
-            QMessageBox, QHBoxLayout, QVBoxLayout, QWidget, QLabel, QMessageBox, QToolButton, QComboBox, QErrorMessage, QGraphicsScene, QGraphicsView)
+            QMessageBox, QHBoxLayout, QVBoxLayout, QWidget, QLabel, QMessageBox, QToolButton, QComboBox, QErrorMessage)
 from PyQt5 import uic, QtCore, QtGui
 from PyQt5.QtCore import (QFile, QPoint, QRect, QSize,
         Qt, QProcess)
-from PyQt5.QtGui import QIcon, QFont, QClipboard, QPixmap
+from PyQt5.QtGui import QIcon, QFont, QClipboard, QPixmap, QImage
 import sys
-import pafy
-import urllib3
+import pafy, requests
+from io import StringIO
+from PIL import Image
 #icon taskbar
 try:
     from PyQt5.QtWinExtras import QtWin
@@ -49,11 +50,9 @@ class UI(QMainWindow):
             error_dialog = QErrorMessage()
             error_dialog.showMessage('No text provided!')
             self.video = pafy.new(self.url)
-            self.thumburl = self.video.bigthumbhd
-            self.thumbdata = urllib3.request.urlopen(self.thumburl).read()
-            self.ThumbView = QGraphicsScene()
-            self.ThumbView.addPixmap(QPixmap(self.thumbdata))
-            self.Thumb.setScene(self.ThumbView)
+            image = QImage()
+            image.loadFromData(requests.get(self.video.bigthumbhd).content)
+            self.thumb.setPixmap(QPixmap(image))
             self.streams = self.video.streams
             self.Qualist = []
             for i in self.streams: 
