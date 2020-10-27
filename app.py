@@ -33,7 +33,6 @@ class UI(QMainWindow):
 
         self.StartDl.clicked.connect(self.cmdDownload)
         self.ProgressBar.setMaximum(1.0)
-
         
 
 
@@ -42,15 +41,21 @@ class UI(QMainWindow):
     def cmdClear(self):
         self.DLink.clear()
         self.SaveLoc.clear()
+        self.VTitle.clear()
+        self.Quality.clear()
+        image = QImage()
+        self.thumb.setPixmap(QPixmap(image))
 
     def cmdQuality(self):
         self.Quality.clear()
         self.url = self.DLink.text()
         self.Quality.clear()
+        self.VTitle.clear()
         if not self.DLink.text() == "":
             error_dialog = QErrorMessage()
             error_dialog.showMessage('No text provided!')
             self.video = pafy.new(self.url)
+            self.VTitle.setText(self.video.title)
             image = QImage()
             image.loadFromData(requests.get(self.video.bigthumbhd).content)
             self.thumb.setPixmap(QPixmap(image))
@@ -79,9 +84,12 @@ class UI(QMainWindow):
         path = self.SaveLoc.text()
         url = self.DLink.text()
         video = pafy.new(url)
-        bs = video.getbest()
-        bs.download(filepath=path, quiet=False, callback=self.DLprogress, meta=False, remux_audio=False)
-
+        if  self.SaveLoc.text() == "":
+            error_dialog = QErrorMessage()
+            error_dialog.showMessage('No save location provided!')
+        else:
+            bs = video.getbest()
+            bs.download(filepath=path, quiet=False, callback=self.DLprogress, meta=False, remux_audio=False)
 
 
 
