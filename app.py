@@ -15,7 +15,14 @@ try:
     QtWin.setCurrentProcessExplicitAppUserModelID(myappid)    
 except ImportError:
     pass
+class Worker(QThread):
+    _signal = pyqtSignal(int)
+    def __init__(self):
+        super(Worker, self).__init__()
 
+    def run(self, total, recvd, ratio, rate, eta):
+        worker = Worker()
+        worker._signal.emit(ratio)
 
 class UI(QMainWindow):
     def __init__(self):
@@ -39,9 +46,10 @@ class UI(QMainWindow):
 
         self.show()
 
-    def progress(self, total, recvd, ratio, rate, eta):
-        self.ProgressBar.setValue(ratio)
-
+    #def progress(self, total, recvd, ratio, rate, eta):
+        #self.ProgressBar.setValue(ratio)
+    def signal_accept(self, msg):
+        self.ProgressBar.setValue(int(msg))
 
     def cmdClear(self):
         self.DLink.clear()
@@ -73,15 +81,15 @@ class UI(QMainWindow):
     def cmdDownload(self):
         path = self.SaveLoc.text()
         url = self.DLink.text()
-        #thread = Thread()
-        #cb = thread._signal.connect(self.signal_accept)     
+        worker = Worker()
+        progress = worker._signal.connect(self.signal_accept)     
         if  self.SaveLoc.text() == "":
             error_dialog = QErrorMessage()
             error_dialog.showMessage('No save location provided!')
         else:
             video = pafy.new(url)
             bs = video.getbest()
-            bs.download(filepath=path, quiet=False, callback=self.progress, meta=False, remux_audio=False)
+            bs.download(filepath=path, quiet=False, callback=worker.start(), meta=False, remux_audio=False)
 
 
     def cmdDlLoc(self):
