@@ -102,22 +102,10 @@
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">border-color: rgb(190, 190, 190);
-background-color: rgb(217, 217, 217);
-alternate-background-color: rgb(217, 217, 217);</string>
+     <string notr="true"/>
     </property>
     <property name="readOnly">
      <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QComboBox" name="Quality">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>60</y>
-      <width>480</width>
-      <height>22</height>
-     </rect>
     </property>
    </widget>
    <widget class="QProgressBar" name="ProgressBar">
@@ -182,6 +170,37 @@ alternate-background-color: rgb(217, 217, 217);</string>
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="VTitle">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>480</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>480</width>
+      <height>23</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>480</width>
+      <height>23</height>
+     </size>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>

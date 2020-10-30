@@ -3,19 +3,19 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QL
             QMessageBox, QHBoxLayout, QVBoxLayout, QWidget, QLabel, QMessageBox, QToolButton, QComboBox, QErrorMessage)
 from PyQt5 import uic, QtCore, QtGui
 from PyQt5.QtCore import (QFile, QPoint, QRect, QSize,
-        Qt, QProcess)
+        Qt, QProcess, QThread, pyqtSignal)
 from PyQt5.QtGui import QIcon, QFont, QClipboard, QPixmap, QImage
 import sys
 import pafy, requests
-from io import StringIO
-from PIL import Image
 #icon taskbar
+
 try:
     from PyQt5.QtWinExtras import QtWin
     myappid = 'youtube.python.download.program'
     QtWin.setCurrentProcessExplicitAppUserModelID(myappid)    
 except ImportError:
     pass
+
 
 class UI(QMainWindow):
     def __init__(self):
@@ -33,39 +33,56 @@ class UI(QMainWindow):
 
         self.DLink.returnPressed.connect(self.cmdQuality)
 
-        
-
+        self.StartDl.clicked.connect(self.cmdDownload)
+        self.ProgressBar.setMaximum(1.0)
+        self.SaveLoc.setText('/tmp')
 
         self.show()
+
+    def progress(self, total, recvd, ratio, rate, eta):
+        self.ProgressBar.setValue(ratio)
+
 
     def cmdClear(self):
         self.DLink.clear()
         self.SaveLoc.clear()
+        self.VTitle.clear()
+        image = QImage()
+        self.thumb.setPixmap(QPixmap(image))
+        self.ProgressBar.setValue(0.0)
 
     def cmdQuality(self):
-        self.Quality.clear()
         self.url = self.DLink.text()
-        self.Quality.clear()
+        self.VTitle.clear()
+        image = QImage()
+        self.thumb.setPixmap(QPixmap(image))
         if not self.DLink.text() == "":
             error_dialog = QErrorMessage()
             error_dialog.showMessage('No text provided!')
             self.video = pafy.new(self.url)
+            self.VTitle.setText(self.video.title)
             image = QImage()
             image.loadFromData(requests.get(self.video.bigthumbhd).content)
             self.thumb.setPixmap(QPixmap(image))
-            self.streams = self.video.streams
-            self.Qualist = []
-            for i in self.streams: 
-                self.Quality.addItem(str(i))
-            
+
         else:
             error_dialog = QErrorMessage()
             error_dialog.showMessage('Error!')
 
-        
 
-    def cmdDLink(self):
-        print("Hello")
+    def cmdDownload(self):
+        path = self.SaveLoc.text()
+        url = self.DLink.text()
+        #thread = Thread()
+        #cb = thread._signal.connect(self.signal_accept)     
+        if  self.SaveLoc.text() == "":
+            error_dialog = QErrorMessage()
+            error_dialog.showMessage('No save location provided!')
+        else:
+            video = pafy.new(url)
+            bs = video.getbest()
+            bs.download(filepath=path, quiet=False, callback=self.progress, meta=False, remux_audio=False)
+
 
     def cmdDlLoc(self):
         dlg = QFileDialog()
@@ -73,7 +90,6 @@ class UI(QMainWindow):
         fileName = dlg.getExistingDirectory()
         if fileName:
             self.SaveLoc.setText(fileName)
-            self.OutFolder = fileName
 
 
 
