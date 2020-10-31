@@ -220,9 +220,6 @@
     <property name="title">
      <string>Youtube DL</string>
     </property>
-    <addaction name="actionSingle_Video"/>
-    <addaction name="actionPlaylist"/>
-    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuYoutube_DL"/>
