@@ -128,6 +128,9 @@
     </property>
    </widget>
    <widget class="QPushButton" name="StartDl">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -213,13 +216,13 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuYoutube_DL">
+   <widget class="QMenu" name="Youtube_DL">
     <property name="title">
      <string>Youtube DL</string>
     </property>
     <addaction name="actionExit"/>
    </widget>
-   <addaction name="menuYoutube_DL"/>
+   <addaction name="Youtube_DL"/>
   </widget>
   <action name="actionExit">
    <property name="text">
