@@ -68,6 +68,7 @@ class UI(QMainWindow):
     @pyqtSlot()
     def cmdDownload(self):
         Yturl = self.DLink.text()
+        self.ProgressBar.setValue(0)
         if  self.SaveLoc.text() == "":
             error_dialog = QMessageBox()
             error_dialog.setWindowTitle("Error")
@@ -119,6 +120,7 @@ class UI(QMainWindow):
             image = QImage()
             image.loadFromData(requests.get(self.video.bigthumbhd).content)
             self.thumb.setPixmap(QPixmap(image))
+
 
     def cmdDlLoc(self):
         dlg = QFileDialog()

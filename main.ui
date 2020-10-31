@@ -33,6 +33,9 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="label">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -128,9 +131,6 @@
     </property>
    </widget>
    <widget class="QPushButton" name="StartDl">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -216,17 +216,30 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="Youtube_DL">
+   <widget class="QMenu" name="menuYoutube_DL">
     <property name="title">
      <string>Youtube DL</string>
     </property>
+    <addaction name="actionSingle_Video"/>
+    <addaction name="actionPlaylist"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
-   <addaction name="Youtube_DL"/>
+   <addaction name="menuYoutube_DL"/>
   </widget>
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionSingle_Video">
+   <property name="text">
+    <string>Single Video</string>
+   </property>
+  </action>
+  <action name="actionPlaylist">
+   <property name="text">
+    <string>Playlist</string>
    </property>
   </action>
  </widget>
