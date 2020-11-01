@@ -7,6 +7,7 @@ Clone the repo to a location of your choice or download the lastest prerelease f
 
 ## Usage
 Overview of the GUI
+
 ![GUI image](https://github.com/Phaugt/yt_dl/blob/main/icons/gui_1.PNG)
 
 
