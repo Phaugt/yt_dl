@@ -73,13 +73,13 @@ class UI(QMainWindow):
             error_dialog = QMessageBox()
             error_dialog.setWindowTitle("Error")
             error_dialog.setIcon(QMessageBox.Critical)
-            error_dialog.setText('No save location provided!')
+            error_dialog.setText('No save location!')
             error_dialog.exec_()
         elif self.DLink.text() =="":
             error_dialog = QMessageBox()
             error_dialog.setWindowTitle("Error")
             error_dialog.setIcon(QMessageBox.Critical)
-            error_dialog.setText('No Downloadlink provided!')
+            error_dialog.setText('No YouTube link or ID provided!')
             error_dialog.exec_()
         else:
             path = self.SaveLoc.text()
@@ -96,7 +96,6 @@ class UI(QMainWindow):
 
     def cmdClear(self):
         self.DLink.clear()
-        self.SaveLoc.clear()
         self.VTitle.clear()
         image = QImage()
         self.thumb.setPixmap(QPixmap(image))
