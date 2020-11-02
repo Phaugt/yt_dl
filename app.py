@@ -137,7 +137,7 @@ class DownLoader(QObject):
         try:
             bv = video.getbest()
             bv.download(filepath=path, quiet=False, callback=self.callback, meta=False, remux_audio=False)
-        except OsError:
+        except Error:
             pass
 
     def callback(self, total, recvd, ratio, rate, eta):
