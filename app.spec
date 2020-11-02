@@ -6,7 +6,7 @@ block_cipher = None
 a = Analysis(['app.py'],
              pathex=['P:\\GIT\\yt_dl'],
              binaries=[],
-             datas=[('main.ui', '.'), ('./icons/128_yt.ico', 'icons'), ('./icons/yt.png', 'icons'), ('./icons/yt_bl.png', 'icons')],
+             datas=[('main.ui', '.'), ('./icons/yt.png', 'icons'), ('./icons/yt_bl.png', 'icons')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -26,8 +26,7 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          console=False,
-          icon='P:/GIT/yt_dl/icons/128_yt.ico')
+          console=False)
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,

@@ -50,6 +50,7 @@ class UI(QMainWindow):
         self.ProgressBar.setValue(0)
         self.SaveLoc.setText(tmp)
         self.actionExit.triggered.connect(qApp.quit)
+        self.DFolder.clicked.connect(self.cmdopenDL)
 
         
         #Downloadthread
@@ -127,6 +128,9 @@ class UI(QMainWindow):
         fileName = dlg.getExistingDirectory()
         if fileName:
             self.SaveLoc.setText(fileName)
+
+    def cmdopenDL(self):
+        os.startfile(self.SaveLoc.text())
 
 class DownLoader(QObject):
     progressChanged = pyqtSignal(int)

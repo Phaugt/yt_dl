@@ -66,7 +66,7 @@
     <property name="font">
      <font>
       <family>Calibri</family>
-      <pointsize>12</pointsize>
+      <pointsize>11</pointsize>
      </font>
     </property>
     <property name="text">
@@ -120,6 +120,12 @@
       <height>22</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Calibri</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
     <property name="value">
      <number>24</number>
     </property>
@@ -139,6 +145,12 @@
       <height>23</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>Calibri</family>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
     <property name="text">
      <string>Download</string>
     </property>
@@ -151,6 +163,12 @@
       <width>100</width>
       <height>23</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Calibri</family>
+      <pointsize>11</pointsize>
+     </font>
     </property>
     <property name="text">
      <string>Clear</string>
@@ -202,8 +220,33 @@
       <height>23</height>
      </size>
     </property>
+    <property name="font">
+     <font>
+      <family>Calibri</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
     <property name="readOnly">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="DFolder">
+    <property name="geometry">
+     <rect>
+      <x>329</x>
+      <y>390</y>
+      <width>161</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Calibri</family>
+      <pointsize>11</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Open Download Folder</string>
     </property>
    </widget>
   </widget>
