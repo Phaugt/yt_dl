@@ -108,18 +108,24 @@ class UI(QMainWindow):
         self.VTitle.clear()
         image = QImage()
         self.thumb.setPixmap(QPixmap(image))
+        self.ProgressBar.setValue(0)
         if self.DLink.text() == "":
             error_dialog = QMessageBox()
             error_dialog.setWindowTitle("Error")
             error_dialog.setIcon(QMessageBox.Critical)
-            error_dialog.setText('No Downloadlink provided!')
+            error_dialog.setText('No YouTube link or ID provided!')
             error_dialog.exec_()
         else:
-            self.video = pafy.new(self.url)
-            self.VTitle.setText(self.video.title)
-            image = QImage()
-            image.loadFromData(requests.get(self.video.bigthumbhd).content)
-            self.thumb.setPixmap(QPixmap(image))
+            try:
+                self.video = pafy.new(self.url)
+                self.VTitle.setText(self.video.title)
+                image = QImage()
+                image.loadFromData(requests.get(self.video.bigthumbhd).content)
+                self.thumb.setPixmap(QPixmap(image))
+            except OSError:
+                pass
+            except ValueError:
+                pass
 
 
     def cmdDlLoc(self):
@@ -141,7 +147,9 @@ class DownLoader(QObject):
         try:
             bv = video.getbest()
             bv.download(filepath=path, quiet=False, callback=self.callback, meta=False, remux_audio=False)
-        except Error:
+        except OSError:
+            pass
+        except ValueError:
             pass
 
     def callback(self, total, recvd, ratio, rate, eta):
