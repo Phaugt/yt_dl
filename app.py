@@ -23,14 +23,28 @@ def resource_path(relative_path):
 # Import .ui forms for the GUI using function resource_path()
 yt_dl_gui = resource_path("main.ui")
 yt_dl_icons = resource_path("./icons/yt.png")
+settings = resource_path("./config/settings.txt")
+
 #working dir and dldir
 wd = os.getcwd()
-tmp = ()
-try: #make dir for downlaods
-    os.mkdir(wd+'\\downloads\\')
-    tmp = str(wd+"\\downloads\\")
-except FileExistsError: #if folder already exists
-    tmp = str(wd+"\\downloads\\")
+cf = open(settings, 'r')
+cfr = cf.readline()
+if cfr == "":
+    try:
+        os.mkdir(wd+'\\downloads\\')
+        tmp = (wd+'\\downloads\\')
+        dlf = open(settings, 'w')
+        dlf.write(tmp)
+        dlf.close()
+    except FileExistsError:
+        tmp = (wd+'\\downloads\\')
+        dlf = open(settings, 'w')
+        dlf.write(tmp)
+        dlf.close()
+else:
+    dlf = open(settings, 'r')
+    dlr = dlf.readline()
+    tmp = dlr
 
 #UI
 class UI(QMainWindow):
@@ -41,6 +55,7 @@ class UI(QMainWindow):
         uic.loadUi(UIFile, self)
         UIFile.close()
 
+        
         #buttons and bars
         self.Clear.clicked.connect(self.cmdClear)
         self.DlLoc.clicked.connect(self.cmdDlLoc)
@@ -48,9 +63,9 @@ class UI(QMainWindow):
         self.StartDl.clicked.connect(self.cmdDownload)
         self.ProgressBar.setMaximum(100)
         self.ProgressBar.setValue(0)
-        self.SaveLoc.setText(tmp)
         self.actionExit.triggered.connect(qApp.quit)
         self.DFolder.clicked.connect(self.cmdopenDL)
+        self.SaveLoc.setText(tmp)
 
         
         #Downloadthread
@@ -108,26 +123,35 @@ class UI(QMainWindow):
         self.VTitle.clear()
         image = QImage()
         self.thumb.setPixmap(QPixmap(image))
+        self.ProgressBar.setValue(0)
         if self.DLink.text() == "":
             error_dialog = QMessageBox()
             error_dialog.setWindowTitle("Error")
             error_dialog.setIcon(QMessageBox.Critical)
-            error_dialog.setText('No Downloadlink provided!')
+            error_dialog.setText('No YouTube link or ID provided!')
             error_dialog.exec_()
         else:
-            self.video = pafy.new(self.url)
-            self.VTitle.setText(self.video.title)
-            image = QImage()
-            image.loadFromData(requests.get(self.video.bigthumbhd).content)
-            self.thumb.setPixmap(QPixmap(image))
+            try:
+                self.video = pafy.new(self.url)
+                self.VTitle.setText(self.video.title)
+                image = QImage()
+                image.loadFromData(requests.get(self.video.bigthumbhd).content)
+                self.thumb.setPixmap(QPixmap(image))
+            except OSError:
+                pass
+            except ValueError:
+                pass
 
 
     def cmdDlLoc(self):
         dlg = QFileDialog()
         dlg.setFileMode(QFileDialog.Directory)
         fileName = dlg.getExistingDirectory()
+        dlf = open(settings, 'w')
         if fileName:
             self.SaveLoc.setText(fileName)
+            dlf.write(str(fileName))
+            dlf.close()
 
     def cmdopenDL(self):
         os.startfile(self.SaveLoc.text())
@@ -141,7 +165,9 @@ class DownLoader(QObject):
         try:
             bv = video.getbest()
             bv.download(filepath=path, quiet=False, callback=self.callback, meta=False, remux_audio=False)
-        except Error:
+        except OSError:
+            pass
+        except ValueError:
             pass
 
     def callback(self, total, recvd, ratio, rate, eta):
