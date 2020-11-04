@@ -23,14 +23,28 @@ def resource_path(relative_path):
 # Import .ui forms for the GUI using function resource_path()
 yt_dl_gui = resource_path("main.ui")
 yt_dl_icons = resource_path("./icons/yt.png")
+settings = resource_path("./config/settings.txt")
+
 #working dir and dldir
 wd = os.getcwd()
-tmp = ()
-try: #make dir for downlaods
-    os.mkdir(wd+'\\downloads\\')
-    tmp = str(wd+"\\downloads\\")
-except FileExistsError: #if folder already exists
-    tmp = str(wd+"\\downloads\\")
+cf = open(settings, 'r')
+cfr = cf.readline()
+if cfr == "":
+    try:
+        os.mkdir(wd+'\\downloads\\')
+        tmp = (wd+'\\downloads\\')
+        dlf = open(settings, 'w')
+        dlf.write(tmp)
+        dlf.close()
+    except FileExistsError:
+        tmp = (wd+'\\downloads\\')
+        dlf = open(settings, 'w')
+        dlf.write(tmp)
+        dlf.close()
+else:
+    dlf = open(settings, 'r')
+    dlr = dlf.readline()
+    tmp = dlr
 
 #UI
 class UI(QMainWindow):
@@ -41,6 +55,7 @@ class UI(QMainWindow):
         uic.loadUi(UIFile, self)
         UIFile.close()
 
+        
         #buttons and bars
         self.Clear.clicked.connect(self.cmdClear)
         self.DlLoc.clicked.connect(self.cmdDlLoc)
@@ -48,9 +63,9 @@ class UI(QMainWindow):
         self.StartDl.clicked.connect(self.cmdDownload)
         self.ProgressBar.setMaximum(100)
         self.ProgressBar.setValue(0)
-        self.SaveLoc.setText(tmp)
         self.actionExit.triggered.connect(qApp.quit)
         self.DFolder.clicked.connect(self.cmdopenDL)
+        self.SaveLoc.setText(tmp)
 
         
         #Downloadthread
@@ -132,8 +147,11 @@ class UI(QMainWindow):
         dlg = QFileDialog()
         dlg.setFileMode(QFileDialog.Directory)
         fileName = dlg.getExistingDirectory()
+        dlf = open(settings, 'w')
         if fileName:
             self.SaveLoc.setText(fileName)
+            dlf.write(str(fileName))
+            dlf.close()
 
     def cmdopenDL(self):
         os.startfile(self.SaveLoc.text())
