@@ -16,9 +16,9 @@ except ImportError:
     pass
 #pyinstaller
 def resource_path(relative_path):
-  if hasattr(sys, '_MEIPASS'):
-      return os.path.join(sys._MEIPASS, relative_path)
-  return os.path.join(os.path.abspath('.'), relative_path)
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath('.'), relative_path)
 
 # Import .ui forms for the GUI using function resource_path()
 yt_dl_gui = resource_path("main.ui")
@@ -141,6 +141,8 @@ class UI(QMainWindow):
                 pass
             except ValueError:
                 pass
+            finally:
+                pass
 
 
     def cmdDlLoc(self):
@@ -168,6 +170,8 @@ class DownLoader(QObject):
         except OSError:
             pass
         except ValueError:
+            pass
+        finally:
             pass
 
     def callback(self, total, recvd, ratio, rate, eta):
