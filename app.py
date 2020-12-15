@@ -2,11 +2,13 @@
 from PyQt5 import uic
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QLineEdit,
             QProgressBar, QMessageBox, QHBoxLayout, QVBoxLayout, QWidget, QLabel,
-            QMessageBox, QToolButton, QComboBox, QErrorMessage, qApp)
+            QMessageBox, QToolButton, QErrorMessage, qApp)
 from PyQt5.QtCore import (QFile, QPoint, QRect, QSize,
         Qt, QProcess, QThread, pyqtSignal, pyqtSlot, Q_ARG , Qt, QMetaObject, QObject)
-from PyQt5.QtGui import QIcon, QFont, QClipboard, QPixmap, QImage
+from PyQt5.QtGui import (QIcon, QFont, QClipboard, QPixmap, QImage)
 import pafy, requests, sys, os, youtube_dl
+from os.path import expanduser
+from easysettings import EasySettings
 #icon taskbar
 try:
     from PyQt5.QtWinExtras import QtWin
@@ -22,29 +24,20 @@ def resource_path(relative_path):
 
 # Import .ui forms for the GUI using function resource_path()
 yt_dl_gui = resource_path("main.ui")
-yt_dl_icons = resource_path("./icons/yt.png")
-settings = resource_path("./config/settings.txt")
-
-#working dir and dldir
+yt_dl_icons = resource_path("./icons/yt_bl.png")
+userfold = expanduser("~")
+config = EasySettings(userfold+"./yt_dl.conf")
 wd = os.getcwd()
-cf = open(settings, 'r')
-cfr = cf.readline()
-if cfr == "":
-    try:
-        os.mkdir(wd+'\\downloads\\')
-        tmp = (wd+'\\downloads\\')
-        dlf = open(settings, 'w')
-        dlf.write(tmp)
-        dlf.close()
-    except FileExistsError:
-        tmp = (wd+'\\downloads\\')
-        dlf = open(settings, 'w')
-        dlf.write(tmp)
-        dlf.close()
-else:
-    dlf = open(settings, 'r')
-    dlr = dlf.readline()
-    tmp = dlr
+tmp = None
+
+try:
+    os.mkdir(wd+'\\downloads\\')
+    tmp = (wd+'\\downloads\\')
+    config.set("dlFolder", str(tmp))
+    config.save()
+except FileExistsError:
+    tmp = config.get("dlFolder")
+
 
 #UI
 class UI(QMainWindow):
@@ -63,7 +56,6 @@ class UI(QMainWindow):
         self.StartDl.clicked.connect(self.cmdDownload)
         self.ProgressBar.setMaximum(100)
         self.ProgressBar.setValue(0)
-        self.actionExit.triggered.connect(qApp.quit)
         self.DFolder.clicked.connect(self.cmdopenDL)
         self.SaveLoc.setText(tmp)
 
@@ -149,11 +141,11 @@ class UI(QMainWindow):
         dlg = QFileDialog()
         dlg.setFileMode(QFileDialog.Directory)
         fileName = dlg.getExistingDirectory()
-        dlf = open(settings, 'w')
+        dlf = config.get("dlFolder")
         if fileName:
             self.SaveLoc.setText(fileName)
-            dlf.write(str(fileName))
-            dlf.close()
+            config.set("dlFolder",str(fileName))
+            config.save()
 
     def cmdopenDL(self):
         os.startfile(self.SaveLoc.text())
@@ -166,7 +158,7 @@ class DownLoader(QObject):
     def start_download(self, video, path):
         try:
             bv = video.getbest()
-            bv.download(filepath=path, quiet=False, callback=self.callback, meta=False, remux_audio=False)
+            bv.download(filepath=path, quiet=True, callback=self.callback, meta=False, remux_audio=False)
         except OSError:
             pass
         except ValueError:
@@ -183,7 +175,7 @@ class DownLoader(QObject):
 
 
 app = QApplication(sys.argv)
-app.setWindowIcon(QIcon(resource_path(yt_dl_icons)))
+app.setWindowIcon(QIcon(yt_dl_icons))
 window = UI()
 window.show()
 app.exec_()
