@@ -26,7 +26,7 @@ def resource_path(relative_path):
 yt_dl_gui = resource_path("main.ui")
 yt_dl_icons = resource_path("./icons/yt_bl.png")
 userfold = expanduser("~")
-config = EasySettings(userfold+"./yt_dl.conf")
+config = EasySettings(userfold+"/yt_dl.conf")
 wd = os.getcwd()
 tmp = None
 

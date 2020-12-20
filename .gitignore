@@ -127,3 +127,4 @@ dmypy.json
 .pyre/
 yt_dl install.exe
 YTDL_Install.exe
+.DS_Store

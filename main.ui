@@ -44,7 +44,7 @@
       <x>0</x>
       <y>0</y>
       <width>501</width>
-      <height>96</height>
+      <height>98</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_3">
@@ -86,15 +86,6 @@
          <height>23</height>
         </size>
        </property>
-       <property name="font">
-        <font>
-         <family>Calibri</family>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">background-color: rgb(238, 238, 238);</string>
-       </property>
        <property name="readOnly">
         <bool>true</bool>
        </property>
@@ -122,12 +113,6 @@
            <height>25</height>
           </size>
          </property>
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
          <property name="text">
           <string>Insert URL or Youtube ID:</string>
          </property>
@@ -140,12 +125,6 @@
            <width>0</width>
            <height>25</height>
           </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>10</pointsize>
-          </font>
          </property>
         </widget>
        </item>
@@ -160,14 +139,8 @@
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>25</height>
+           <height>30</height>
           </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>10</pointsize>
-          </font>
          </property>
          <property name="text">
           <string>Select Download folder</string>
@@ -181,15 +154,6 @@
            <width>0</width>
            <height>25</height>
           </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">background-color: rgb(238, 238, 238);</string>
          </property>
          <property name="readOnly">
           <bool>true</bool>
@@ -232,14 +196,8 @@
          <property name="maximumSize">
           <size>
            <width>500</width>
-           <height>25</height>
+           <height>30</height>
           </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>10</pointsize>
-          </font>
          </property>
          <property name="value">
           <number>24</number>
@@ -281,15 +239,9 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>160</width>
-           <height>25</height>
+           <width>180</width>
+           <height>30</height>
           </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>11</pointsize>
-          </font>
          </property>
          <property name="text">
           <string>Open Download Folder</string>
@@ -306,15 +258,9 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
-           <height>25</height>
+           <width>90</width>
+           <height>30</height>
           </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>11</pointsize>
-          </font>
          </property>
          <property name="text">
           <string>Download</string>
@@ -331,15 +277,9 @@
          </property>
          <property name="maximumSize">
           <size>
-           <width>80</width>
-           <height>25</height>
+           <width>90</width>
+           <height>30</height>
           </size>
-         </property>
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>11</pointsize>
-          </font>
          </property>
          <property name="text">
           <string>Clear</string>
