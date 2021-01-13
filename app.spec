@@ -4,9 +4,9 @@ block_cipher = None
 
 
 a = Analysis(['app.py'],
-             pathex=['P:\\GIT\\yt_dl'],
+             pathex=['C:\\GIT\\yt_dl'],
              binaries=[],
-             datas=[('main.ui', '.'), ('./icons/*', 'icons'), ('./config/*', 'config')],
+             datas=[('main.ui', '.'), ('./icons/*', 'icons')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],

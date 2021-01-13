@@ -31,11 +31,12 @@ wd = os.getcwd()
 tmp = None
 
 try:
-    os.mkdir(wd+'\\downloads\\')
-    tmp = (wd+'\\downloads\\')
-    config.set("dlFolder", str(tmp))
-    config.save()
-except FileExistsError:
+    tmp = config.get("dlFolder")
+    if tmp == "":
+        tmp = (userfold+'\\downloads\\')
+        config.set("dlFolder", str(tmp))
+        config.save()
+except Exception:
     tmp = config.get("dlFolder")
 
 
@@ -132,8 +133,6 @@ class UI(QMainWindow):
             except OSError:
                 pass
             except ValueError:
-                pass
-            finally:
                 pass
 
 
