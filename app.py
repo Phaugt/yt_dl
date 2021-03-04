@@ -2,10 +2,10 @@
 from PyQt5 import uic
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QLineEdit,
             QProgressBar, QMessageBox, QHBoxLayout, QVBoxLayout, QWidget, QLabel,
-            QMessageBox, QToolButton, QErrorMessage, qApp)
+            QMessageBox, qApp)
 from PyQt5.QtCore import (QFile, QPoint, QRect, QSize,
         Qt, QProcess, QThread, pyqtSignal, pyqtSlot, Q_ARG , Qt, QMetaObject, QObject)
-from PyQt5.QtGui import (QIcon, QFont, QClipboard, QPixmap, QImage)
+from PyQt5.QtGui import (QIcon, QPixmap, QImage)
 import pafy, requests, sys, os, youtube_dl
 from os.path import expanduser
 from easysettings import EasySettings
@@ -69,27 +69,25 @@ class UI(QMainWindow):
         self.downloader.finished.connect(self.on_finished)
         self.downloader.moveToThread(thread)
 
+    def messageBox(self, type, message):
+        error_dialog = QMessageBox()
+        error_dialog.setWindowTitle(type)
+        error_dialog.setIcon(QMessageBox.Critical)
+        error_dialog.setText(message)
+        error_dialog.exec_()
+
     @pyqtSlot()
     def on_finished(self):
         self.update_disables(False)
-
 
     @pyqtSlot()
     def cmdDownload(self):
         Yturl = self.DLink.text()
         self.ProgressBar.setValue(0)
         if  self.SaveLoc.text() == "":
-            error_dialog = QMessageBox()
-            error_dialog.setWindowTitle("Error")
-            error_dialog.setIcon(QMessageBox.Critical)
-            error_dialog.setText('No save location!')
-            error_dialog.exec_()
+            self.messageBox('Error!','No save location provided!')
         elif self.DLink.text() =="":
-            error_dialog = QMessageBox()
-            error_dialog.setWindowTitle("Error")
-            error_dialog.setIcon(QMessageBox.Critical)
-            error_dialog.setText('No YouTube link or ID provided!')
-            error_dialog.exec_()
+            self.messageBox('Error!','No YouTube link or ID provided!')
         else:
             path = self.SaveLoc.text()
             video = pafy.new(Yturl)
@@ -118,11 +116,7 @@ class UI(QMainWindow):
         self.thumb.setPixmap(QPixmap(image))
         self.ProgressBar.setValue(0)
         if self.DLink.text() == "":
-            error_dialog = QMessageBox()
-            error_dialog.setWindowTitle("Error")
-            error_dialog.setIcon(QMessageBox.Critical)
-            error_dialog.setText('No YouTube link or ID provided!')
-            error_dialog.exec_()
+            self.messageBox('Error!','No YouTube link or ID provided!')
         else:
             try:
                 self.video = pafy.new(self.url)
