@@ -6,14 +6,17 @@ from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QL
 from PyQt5.QtCore import (QFile, QPoint, QRect, QSize,
         Qt, QProcess, QThread, pyqtSignal, pyqtSlot, Q_ARG , Qt, QMetaObject, QObject)
 from PyQt5.QtGui import (QIcon, QFont, QClipboard, QPixmap, QImage)
-import pafy, requests, sys, os, youtube_dl
+import pafy, requests, sys, os, youtube_dl, subprocess
 from os.path import expanduser
 from easysettings import EasySettings
 #icon taskbar
 try:
-    from PyQt5.QtWinExtras import QtWin
-    myappid = 'youtube.python.download.program'
-    QtWin.setCurrentProcessExplicitAppUserModelID(myappid)    
+    if os.name == 'nt':
+        from PyQt5.QtWinExtras import QtWin
+        myappid = 'youtube.python.download.program'
+        QtWin.setCurrentProcessExplicitAppUserModelID(myappid)
+    else:
+        pass
 except ImportError:
     pass
 #pyinstaller
@@ -31,8 +34,7 @@ wd = os.getcwd()
 tmp = None
 
 try:
-    os.mkdir(wd+'\\downloads\\')
-    tmp = (wd+'\\downloads\\')
+    tmp = (userfold+'\\downloads\\')
     config.set("dlFolder", str(tmp))
     config.save()
 except FileExistsError:
@@ -68,6 +70,13 @@ class UI(QMainWindow):
         self.downloader.finished.connect(self.on_finished)
         self.downloader.moveToThread(thread)
 
+    def messageBox(self, message):
+            error_dialog = QMessageBox()
+            error_dialog.setWindowTitle("Error")
+            error_dialog.setIcon(QMessageBox.Critical)
+            error_dialog.setText(message)
+            error_dialog.exec_()
+
     @pyqtSlot()
     def on_finished(self):
         self.update_disables(False)
@@ -78,17 +87,9 @@ class UI(QMainWindow):
         Yturl = self.DLink.text()
         self.ProgressBar.setValue(0)
         if  self.SaveLoc.text() == "":
-            error_dialog = QMessageBox()
-            error_dialog.setWindowTitle("Error")
-            error_dialog.setIcon(QMessageBox.Critical)
-            error_dialog.setText('No save location!')
-            error_dialog.exec_()
+            self.messageBox('No save location!')
         elif self.DLink.text() =="":
-            error_dialog = QMessageBox()
-            error_dialog.setWindowTitle("Error")
-            error_dialog.setIcon(QMessageBox.Critical)
-            error_dialog.setText('No YouTube link or ID provided!')
-            error_dialog.exec_()
+            self.messageBox('No YouTube link or ID provided!')
         else:
             path = self.SaveLoc.text()
             video = pafy.new(Yturl)
@@ -117,11 +118,7 @@ class UI(QMainWindow):
         self.thumb.setPixmap(QPixmap(image))
         self.ProgressBar.setValue(0)
         if self.DLink.text() == "":
-            error_dialog = QMessageBox()
-            error_dialog.setWindowTitle("Error")
-            error_dialog.setIcon(QMessageBox.Critical)
-            error_dialog.setText('No YouTube link or ID provided!')
-            error_dialog.exec_()
+            self.messageBox('No YouTube link or ID provided!')
         else:
             try:
                 self.video = pafy.new(self.url)
@@ -132,8 +129,6 @@ class UI(QMainWindow):
             except OSError:
                 pass
             except ValueError:
-                pass
-            finally:
                 pass
 
 
@@ -148,7 +143,14 @@ class UI(QMainWindow):
             config.save()
 
     def cmdopenDL(self):
-        os.startfile(self.SaveLoc.text())
+        try:
+            folder = config.get("dlFolder")
+            if os.name == 'nt':
+                os.startfile(folder)
+            if os.name == 'posix':
+                subprocess.check_call(['open', '--', folder])
+        except subprocess.CalledProcessError:
+            pass
 
 class DownLoader(QObject):
     progressChanged = pyqtSignal(int)
