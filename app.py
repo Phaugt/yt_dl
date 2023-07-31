@@ -2,11 +2,13 @@
 from PyQt5 import uic
 from PyQt5.QtWidgets import (QAction, QApplication, QFileDialog, QMainWindow, QLineEdit,
             QProgressBar, QMessageBox, QHBoxLayout, QVBoxLayout, QWidget, QLabel,
-            QMessageBox, qApp)
+            QMessageBox, qApp, QStatusBar)
 from PyQt5.QtCore import (QFile, QPoint, QRect, QSize,
         Qt, QProcess, QThread, pyqtSignal, pyqtSlot, Q_ARG , Qt, QMetaObject, QObject)
 from PyQt5.QtGui import (QIcon, QPixmap, QImage)
-import pafy, requests, sys, os, youtube_dl
+import requests, sys, os, youtube_dl
+from pytube import YouTube
+from pytube.exceptions import *
 from os.path import expanduser
 from easysettings import EasySettings
 #icon taskbar
@@ -23,7 +25,7 @@ def resource_path(relative_path):
     return os.path.join(os.path.abspath('.'), relative_path)
 
 # Import .ui forms for the GUI using function resource_path()
-yt_dl_gui = resource_path("main.ui")
+yt_dl_gui = resource_path("gui.ui")
 yt_dl_icons = resource_path("./icons/yt_bl.png")
 userfold = expanduser("~")
 config = EasySettings(userfold+"./yt_dl.conf")
@@ -55,18 +57,23 @@ class UI(QMainWindow):
         self.DlLoc.clicked.connect(self.cmdDlLoc)
         self.DLink.returnPressed.connect(self.MetaData)
         self.StartDl.clicked.connect(self.cmdDownload)
-        self.ProgressBar.setMaximum(100)
-        self.ProgressBar.setValue(0)
         self.DFolder.clicked.connect(self.cmdopenDL)
         self.SaveLoc.setText(tmp)
+        self.statusBar().showMessage("Ready!")
+        self.progress_bar = QProgressBar()
+        self.statusBar().addPermanentWidget(self.progress_bar)
+        self.progress_bar.setFixedSize(self.geometry().width() - 120, 16)
+        self.progress_bar.setValue(0)
+        self.progress_bar.hide()
 
         
         #Downloadthread
         self.downloader = DownLoader()
         thread = QThread(self)
         thread.start()
-        self.downloader.progressChanged.connect(self.ProgressBar.setValue)
         self.downloader.finished.connect(self.on_finished)
+        self.downloader.statusmessage.connect(self.statusBar().showMessage)
+        self.downloader.progress.connect(self.progress_bar.setValue)
         self.downloader.moveToThread(thread)
 
     def messageBox(self, type, message):
@@ -79,51 +86,53 @@ class UI(QMainWindow):
     @pyqtSlot()
     def on_finished(self):
         self.update_disables(False)
+        self.progress_bar.hide()
 
     @pyqtSlot()
     def cmdDownload(self):
         Yturl = self.DLink.text()
-        self.ProgressBar.setValue(0)
         if  self.SaveLoc.text() == "":
             self.messageBox('Error!','No save location provided!')
         elif self.DLink.text() =="":
             self.messageBox('Error!','No YouTube link or ID provided!')
         else:
             path = self.SaveLoc.text()
-            video = pafy.new(Yturl)
             QMetaObject.invokeMethod(self.downloader, "start_download",
                 Qt.QueuedConnection,
-                Q_ARG(object, video),
+                Q_ARG(object, Yturl),
                 Q_ARG(str, path))
             self.update_disables(True)
+            self.progress_bar.show()
 
     def update_disables(self, state):
         self.DLink.setDisabled(state)
         self.StartDl.setDisabled(state)
+        self.progress_bar.setValue(0)
 
     def cmdClear(self):
         self.DLink.clear()
         self.VTitle.clear()
         image = QImage()
         self.thumb.setPixmap(QPixmap(image))
-        self.ProgressBar.setValue(0)
         self.update_disables(False)
+        self.progress_bar.hide()
 
     def MetaData(self):
         self.url = self.DLink.text()
         self.VTitle.clear()
         image = QImage()
         self.thumb.setPixmap(QPixmap(image))
-        self.ProgressBar.setValue(0)
         if self.DLink.text() == "":
             self.messageBox('Error!','No YouTube link or ID provided!')
         else:
             try:
-                self.video = pafy.new(self.url)
+                self.video = YouTube(self.url)
                 self.VTitle.setText(self.video.title)
-                image = QImage()
-                image.loadFromData(requests.get(self.video.bigthumbhd).content)
-                self.thumb.setPixmap(QPixmap(image))
+                image = QPixmap()
+                image.loadFromData(requests.get(self.video.thumbnail_url).content)
+                scaled = image.scaled(768,432,Qt.KeepAspectRatio)
+                self.thumb.setPixmap(scaled)
+                self.statusBar().showMessage("Metadata loaded!")
             except OSError:
                 pass
             except ValueError:
@@ -143,27 +152,41 @@ class UI(QMainWindow):
     def cmdopenDL(self):
         os.startfile(self.SaveLoc.text())
 
+
+
 class DownLoader(QObject):
-    progressChanged = pyqtSignal(int)
     finished = pyqtSignal()
+    statusmessage = pyqtSignal(str)
+    progress = pyqtSignal(int)
 
     @pyqtSlot(object, str)
-    def start_download(self, video, path):
+    def start_download(self, url, path):
         try:
-            bv = video.getbest()
-            bv.download(filepath=path, quiet=True, callback=self.callback, meta=False, remux_audio=False)
-        except OSError:
+            yt = YouTube(url,on_progress_callback=self.on_progress)
+            yt = yt.streams.get_highest_resolution()
+            self.statusmessage.emit("Download Started!")
+        except AgeRestrictedError:
+            self.statusmessage.emit("Error!")
             pass
-        except ValueError:
-            pass
-        finally:
-            pass
-
-    def callback(self, total, recvd, ratio, rate, eta):
-        val = int(ratio * 100)
-        self.progressChanged.emit(val)
-        if val == 100:
+        except:
+            self.statusmessage.emit("Error!")
             self.finished.emit()
+        else:
+            yt.download(output_path=path)
+            self.statusmessage.emit("Download Completed!")
+        self.finished.emit()
+    
+    def on_progress(self, stream, chunk, bytes_remaining):
+        """Callback function"""
+        total_size = stream.filesize
+        bytes_downloaded = total_size - bytes_remaining
+        pct_completed = bytes_downloaded / total_size * 100        
+        message = f"{round(bytes_downloaded/1000000)}/{round(total_size/1000000)} MB"
+        self.statusmessage.emit(message)
+        self.progress.emit(round(pct_completed))
+        if round(pct_completed) == 100:
+            self.finished.emit()
+
 
 
 
